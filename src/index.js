@@ -17,7 +17,11 @@ import {
 } from "firebase/firestore";
 
 // Authentication imports
-import { getAuth } from "firebase/auth";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 const firebaseConfig = {
   apiKey: "AIzaSyAtCx3CLclo-cDH9K_psQJCri9uho1hCrk",
   authDomain: "fir-9-690b4.firebaseapp.com",
@@ -44,8 +48,9 @@ let userArray = [];
 
 let FullName = document.getElementById("FullName");
 let Email = document.getElementById("Email");
+let AddBtn = document.getElementById("addUser");
 
-document.getElementById("addUser").addEventListener("click", (ev) => {
+AddBtn.addEventListener("click", (ev) => {
   ev.preventDefault();
   const userDetails = {
     FullName: FullName.value,
@@ -132,7 +137,6 @@ onSnapshot(collectionRef, (querySnapshot) => {
         </td>
     </tr>
 `;
-
   });
 
   // Append the HTML string to the table body
@@ -150,7 +154,7 @@ onSnapshot(collectionRef, (querySnapshot) => {
 });
 
 function EditUser(id) {
-  alert("cool")
+  alert("cool");
   console.log("User Id : ", id);
 }
 
@@ -209,4 +213,51 @@ document.getElementById("Update").addEventListener("click", (ev) => {
     userFullName.value = "";
     userEmail.value = "";
   });
+});
+
+// Sign Up User
+
+let email = document.getElementById("email");
+let password = document.getElementById("password");
+let confirmPassword = document.getElementById("confirmPassword");
+let signBtn = document.getElementById("SignUp");
+
+signBtn.addEventListener("click", (ev) => {
+  ev.preventDefault();
+  if (password.value !== confirmPassword.value) {
+    return alert("Password does not match");
+  } else {
+    createUserWithEmailAndPassword(auth, email.value, password.value)
+      .then((userCredentials) => {
+        console.log("User Signed Up Succesfully", userCredentials.user);
+        alert("User Signed Up Successfully");
+      })
+      .catch((err) => {
+        alert("Error Signing Up User! " + err.message);
+        console.log("Error Signing Up User", err);
+      });
+  }
+});
+
+// Login Functions
+let loginEmail = document.getElementById("logEmail");
+let loginPassword = document.getElementById("logPassword");
+let loginBtn = document.getElementById("Login");
+
+loginBtn.addEventListener("click", (ev) => {
+  ev.preventDefault();
+  if (!loginEmail.value || !loginPassword.value) {
+    alert("Please Enter Email and Password");
+    return;
+  } else {
+    signInWithEmailAndPassword(auth, loginEmail.value, loginPassword.value)
+      .then((userDetails) => {
+        console.log("User Loged In Successfully : ", userDetails.user);
+        alert("User Logged In Successfully");
+      })
+      .catch((err) => {
+        alert("Error Logging In User! " + err.message);
+        console.log("Error Logging In User", err);
+      });
+  }
 });

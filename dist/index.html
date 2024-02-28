@@ -24,6 +24,7 @@
   </style>
   <body>
     <h1>Welcome to Hello world</h1>
+  <a href="/dist//login.html"> <button id="logout" class="btn btn-danger ">Logout</button></a>
 
     <form
       action=""
@@ -100,6 +101,67 @@
        Update Details
       </button>
     </form>
-    <script src="bundle.js"></script>
+
+
+    <!-- Sign Up With Email And Password  -->
+    <h1 class="fs-1 text-center text-primary">Sign Up With Email And Password </h1>
+
+  <form
+      action=""
+      class="col-10 col-md-8 col-lg-5 mx-auto mt-5 shadow-sm rounded-3 p-3 my-5"
+    >
+      <input
+        id="email"
+        type="text"
+        required
+        placeholder="Email"
+        class="form-control my-2"
+      />
+      <input
+        id="password"
+        type="password"
+        required
+        placeholder="Password"
+        class="form-control my-4"
+      />
+      <input
+        id="confirmPassword"
+        type="password" 
+        required
+        placeholder="Confirm  Password"
+        class="form-control my-4"
+      />
+      <button id="SignUp" class="btn btn-primary mx-auto">
+       Update Details
+      </button>
+    </form>
+
+
+    <!-- Login Form  -->
+    <form
+    action=""
+    class="col-10 col-md-8 col-lg-5 mx-auto mt-5 shadow-sm rounded-3 p-3 my-5"
+  >
+    <h2 class="fs-2 text-primary text-center">User  Login Form</h2>
+    <input
+      id="logEmail"
+      type="email"
+      required
+      placeholder="Email"
+      class="form-control my-4"
+    />
+    <input
+      id="logPassword"
+      type="password"
+      required
+      placeholder="Password"
+      class="form-control my-4"
+    />
+    <button id="Login" class="btn btn-primary mx-auto">
+      Log In
+    </button>
+    <p>Don't have an account? <a href="/dist/signUp.html">Sign Up</a></p>
+  </form>
+    <script src="/dist/bundle.js"></script>
   </body>
 </html>
