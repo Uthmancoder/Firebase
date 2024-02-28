@@ -1,6 +1,23 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, addDoc, doc, deleteDoc } from "firebase/firestore";
 
+// Firebase Firestore imports
+import {
+  getFirestore,
+  collection,
+  onSnapshot,
+  addDoc,
+  doc,
+  deleteDoc,
+  query,
+  where,
+  getDoc,
+  orderBy,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
+
+// Authentication imports
+import { getAuth } from "firebase/auth";
 const firebaseConfig = {
   apiKey: "AIzaSyAtCx3CLclo-cDH9K_psQJCri9uho1hCrk",
   authDomain: "fir-9-690b4.firebaseapp.com",
@@ -12,10 +29,18 @@ const firebaseConfig = {
 
 initializeApp(firebaseConfig);
 
+// initializaing the firestore
 const db = getFirestore();
+
+// initializaing the authentication
+const auth = getAuth();
+
 const collectionRef = collection(db, "userData");
 
-const userArray = [];
+// Querying my database to get a single document
+const user = query(collectionRef, orderBy("createdAt"));
+
+let userArray = [];
 
 let FullName = document.getElementById("FullName");
 let Email = document.getElementById("Email");
@@ -25,40 +50,111 @@ document.getElementById("addUser").addEventListener("click", (ev) => {
   const userDetails = {
     FullName: FullName.value,
     Email: Email.value,
+    createdAt: serverTimestamp(),
   };
   console.log(userDetails);
   addDoc(collectionRef, userDetails)
     .then(() => {
-      window.location.reload();
+      FullName.value = "";
+      Email.value = "";
+      console.log("Document successfully written!", userDetails);
     })
     .catch((error) => {
       console.error("Error adding document: ", error);
     });
 });
 
-getDocs(collectionRef)
-  .then((querySnapshot) => {
-    querySnapshot.forEach((doc) => {
-      userArray.push({ ...doc.data(), id: doc.id });
-      console.log(doc.data());
-    });
-    console.log("Users Array", userArray);
-    userArray.forEach((user, id) => {
-      document.getElementById("screen").innerHTML += `
-       <Table className="border">
-       <tr>
-       <td>${user.id}</td>
-       <td>${user.FullName}</td>
-       <td>${user.Email}</td>
-       </tr>
-       </Table> 
-       `;
-    });
-  })
-  .catch((error) => {
-    console.error("Error getting docufments:/ ", error);
+// Reference to the table body
+let tableBody = document.getElementById("screen");
+
+// // Getting documents in real-time
+// onSnapshot(collectionRef, (querySnapshot) => {
+//   // Clear previous HTML content
+//   tableBody.innerHTML = "";
+
+//   // Clear userArray before pushing new data
+//   userArray = [];
+
+//   querySnapshot.forEach((doc) => {
+//     userArray.push({ ...doc.data(), id: doc.id });
+//     console.log(doc.data());
+//   });
+
+//   console.log("Users Array", userArray);
+
+//   // Create HTML string inside the loop
+//   let htmlString = "";
+//   userArray.forEach((user) => {
+//     htmlString += `
+//             <tr>
+//                 <td>${user.id}</td>
+//                 <td>${user.FullName}</td>
+//                 <td>${user.Email}</td>
+//             </tr>
+//         `;
+//   });
+
+//   // Append the HTML string to the table body
+//   tableBody.innerHTML = `
+//         <table className="border">
+//             <tr>
+//                 <th>ID</th>
+//                 <th>Full Name</th>
+//                 <th>Email</th>
+//             </tr>
+//             ${htmlString}
+//         </table>
+//     `;
+// });
+
+// Getting Document in real time
+onSnapshot(collectionRef, (querySnapshot) => {
+  userArray = [];
+  querySnapshot.forEach((doc) => {
+    // console.log(doc.id, " => ", doc.data());
+    userArray.push({ ...doc.data(), id: doc.id });
+    console.log("Document Data : ", doc.data());
   });
 
+  console.log("User Array : ", userArray);
+
+  // Create HTML string inside the loop
+  let htmlString = "";
+  userArray.forEach((user) => {
+    htmlString += `
+    <tr>
+        <td>${user.id}</td>
+        <td>${user.FullName}</td>
+        <td>${user.Email}</td>
+        <td class="d-flex gap-3 align-items-center">
+            <button onclick="EditUser('${user.id}')" class="btn btn-info">Edit</button>
+            <button class="btn btn-danger">Delete</button>
+        </td>
+    </tr>
+`;
+
+  });
+
+  // Append the HTML string to the table body
+  tableBody.innerHTML = `
+        <table className="border">
+            <tr>
+                <th>ID</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Action</th>
+            </tr>
+            ${htmlString}
+        </table>
+    `;
+});
+
+function EditUser(id) {
+  alert("cool")
+  console.log("User Id : ", id);
+}
+
+// Deleting document
 let id = document.getElementById("deleteId");
 document.getElementById("deleteUser").addEventListener("click", (ev) => {
   ev.preventDefault();
@@ -66,21 +162,51 @@ document.getElementById("deleteUser").addEventListener("click", (ev) => {
   if (UserId === "") {
     alert("Please Enter User Id");
     return;
-  }else{
-    const docReference =  doc(db, "userData", UserId);
-   const deleteAcc =  deleteDoc(docReference).then(()=>{
-     alert("Document successfully deleted!");
-    }).catch((error)=>{
-      console.error("Error deleting document: ", error);
-    alert("Error deleting document: ", error);
-    })
-    if(!deleteAcc){
+  } else {
+    const docReference = doc(db, "userData", UserId);
+    const deleteAcc = deleteDoc(docReference)
+      .then(() => {
+        alert("Document successfully deleted!");
+        id.value = "";
+      })
+      .catch((error) => {
+        console.error("Error deleting document: ", error);
+        alert("Error deleting document: ", error);
+      });
+    if (!deleteAcc) {
       alert("User Not Found");
       return;
-    
     }
   }
   console.log("User Id : ", id.value);
 });
 
-// let screen = document.getElementById("screen");
+// Getting document for a single user
+let userReference = doc(db, "userData", "6kzdpseOCELTcCKffBQ2");
+onSnapshot(userReference, (doc) => {
+  console.log("Single User data: ", doc.data());
+  const timeRegistered = doc.data().createdAt;
+  const date = timeRegistered.toString();
+  //  const time = date.getTime().toLocalTime()
+
+  console.log("Time Registered", date);
+});
+
+// Updating a single document
+const userId = document.getElementById("userId");
+const userFullName = document.getElementById("UpdateFullName");
+const userEmail = document.getElementById("UpdateEmail");
+
+document.getElementById("Update").addEventListener("click", (ev) => {
+  ev.preventDefault();
+  const docRef = doc(db, "userData", userId.value);
+  updateDoc(docRef, {
+    FullName: userFullName.value,
+    Email: userEmail.value,
+  }).then(() => {
+    console.log("Document Updated Successfully");
+    userId.value = "";
+    userFullName.value = "";
+    userEmail.value = "";
+  });
+});

@@ -49,34 +49,56 @@
       </button>
     </form>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Id</th>
-          <th>FullName</th>
-          <th>Email</th>
-        </tr>
-      </thead>
-      <tbody id="screen"></tbody>
-    </table>
+    <!-- Displaying users -->
+    <div id="screen"></div>
+
     <form
       action=""
       class="col-10 col-md-8 col-lg-5 mx-auto mt-5 shadow-sm rounded-3 p-3 my-5"
     >
       <h2 class="text-center fs-1 text-primary">Delete User</h2>
+      <input
+        id="deleteId"
+        type="text"
+        required
+        placeholder="Enter User Id"
+        class="form-control my-2"
+      />
+      <button id="deleteUser" class="btn btn-danger mx-auto mt-4">
+        Delete User
+      </button>
+    </form>
 
-      
-        <input
-          id="deleteId"
-          type="text"
-          required
-          placeholder="Enter User Id"
-          class="form-control my-2"
-        />
-        <button id="deleteUser" class="btn btn-danger mx-auto mt-4">
-          Delete User
-        </button>
-   
+
+    <form
+      action=""
+      class="col-10 col-md-8 col-lg-5 mx-auto mt-5 shadow-sm rounded-3 p-3 my-5"
+    >
+      <h2 class="fs-2 text-primary text-center">Update User Information</h2>
+      <input
+        id="userId"
+        type="text"
+        required
+        placeholder="User Id"
+        class="form-control my-4"
+      />
+      <input
+        id="UpdateFullName"
+        type="text"
+        required
+        placeholder="FullName"
+        class="form-control my-2"
+      />
+      <input
+        id="UpdateEmail"
+        type="email"
+        required
+        placeholder="Email"
+        class="form-control my-4"
+      />
+      <button id="Update" class="btn btn-primary mx-auto">
+       Update Details
+      </button>
     </form>
     <script src="bundle.js"></script>
   </body>
